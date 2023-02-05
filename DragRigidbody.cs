@@ -6,10 +6,14 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class DragRigidbody : MonoBehaviour
 {
-  public float force = 600;
+    public float force = 600;
 	public float damping = 6;
-	
-	Transform jointTrans;
+	public float distance = 15;
+
+	public LineRenderer lr;
+	public Transform lineRenderLocation;
+
+    Transform jointTrans;
 	float dragDepth;
 
 	void OnMouseDown ()
@@ -31,12 +35,14 @@ public class DragRigidbody : MonoBehaviour
 	{
 		var ray = Camera.main.ScreenPointToRay (screenPosition);
 		RaycastHit hit;
-		if (Physics.Raycast (ray, out hit)) {
+		if (Physics.Raycast (ray, out hit, distance)) {
 			if (hit.transform.gameObject.layer == LayerMask.NameToLayer ("Interactive")) {
 				dragDepth = CameraPlane.CameraToPointDepth (Camera.main, hit.point);
 				jointTrans = AttachJoint (hit.rigidbody, hit.point);
 			}
 		}
+
+		lr.positionCount = 2;
 	}
 	
 	public void HandleInput (Vector3 screenPosition)
@@ -45,11 +51,14 @@ public class DragRigidbody : MonoBehaviour
 			return;
 		var worldPos = Camera.main.ScreenToWorldPoint (screenPosition);
 		jointTrans.position = CameraPlane.ScreenToWorldPlanePoint (Camera.main, dragDepth, screenPosition);
+
+		DrawRope();
 	}
 	
 	public void HandleInputEnd (Vector3 screenPosition)
 	{
-		Destroy (jointTrans.gameObject);
+		DestroyRope();
+        Destroy (jointTrans.gameObject);
 	}
 	
 	Transform AttachJoint (Rigidbody rb, Vector3 attachmentPosition)
@@ -81,5 +90,21 @@ public class DragRigidbody : MonoBehaviour
 		drive.positionDamper = damping;
 		drive.maximumForce = Mathf.Infinity;
 		return drive;
+	}
+
+	private void DrawRope()
+	{
+		if(jointTrans == null)
+		{
+			return;
+		}
+
+		lr.SetPosition(0, lineRenderLocation.position);
+		lr.SetPosition(1, this.transform.position);
+    }
+
+	private void DestroyRope()
+	{
+		lr.positionCount = 0;
 	}
 }
