@@ -1,14 +1,11 @@
 using UnityEngine;
 using System.Collections;
 
-/// <summary>
-/// Utility class for working with planes relative to a camera.
-/// </summary>
+// Script to return world position at given coord for given depth
+// https://youtube.com/c/Boxply
+
 public static class CameraPlane
 {
-  /// <summary>
-	/// Returns world space position at a given viewport coordinate for a given depth.
-	/// </summary>
 	public static Vector3 ViewportToWorldPlanePoint (Camera theCamera, float zDepth, Vector2 viewportCord)
 	{
 		Vector2 angles = ViewportPointToAngle (theCamera, viewportCord);
@@ -25,9 +22,8 @@ public static class CameraPlane
 		return ViewportToWorldPlanePoint (camera, zDepth, point);
 	}
 	
-	/// <summary>
-	/// Returns X and Y frustum angle for the given camera representing the given viewport space coordinate.
-	/// </summary>
+	// Returns X and Y frustum angle for the given camera representing the given viewport space coordinate.
+
 	public static Vector2 ViewportPointToAngle (Camera cam, Vector2 ViewportCord)
 	{
 		float adjustedAngle = AngleProportion(cam.fieldOfView/2, cam.aspect) * 2;
@@ -38,9 +34,8 @@ public static class CameraPlane
 		return new UnityEngine.Vector2 (xAngle, yAngle);
 	}
 	
-	/// <summary>
-	/// Distance between the camera and a plane parallel to the viewport that passes through a given point.
-	/// </summary>
+	// Distance between the camera and a plane parallel to the viewport that passes through a given point.
+
 	public static float CameraToPointDepth (Camera cam, Vector3 point)
 	{
 		Vector3 localPosition = cam.transform.InverseTransformPoint (point);
